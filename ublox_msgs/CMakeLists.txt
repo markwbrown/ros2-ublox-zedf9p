@@ -40,7 +40,6 @@ set(msg_files
   "msg/CfgSBAS.msg"
   "msg/CfgTMODE3.msg"
   "msg/CfgUSB.msg"
-  "msg/EsfALG.msg"
   "msg/EsfINS.msg"
   "msg/EsfMEAS.msg"
   "msg/EsfRAW.msg"
