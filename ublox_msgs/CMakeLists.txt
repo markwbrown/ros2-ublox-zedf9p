@@ -90,7 +90,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 
 include_directories(include)
-add_library(${PROJECT_NAME} src/ublox_msgs.cpp)
+add_library(${PROJECT_NAME} SHARED src/ublox_msgs.cpp)
 
 rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 target_link_libraries(${PROJECT_NAME} "${cpp_typesupport_target}")
@@ -99,10 +99,13 @@ ament_target_dependencies(${PROJECT_NAME}
   "ublox_serialization"
 )
 
-install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
-  ARCHIVE DESTINATION lib
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
   LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
 )
 
 install(DIRECTORY include/
