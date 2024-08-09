@@ -47,7 +47,6 @@ set(msg_files
   "msg/EsfRAW.msg"
   "msg/EsfRAWBlock.msg"
   "msg/EsfSTATUS.msg"
-  "msg/EsfSTATUS_Sens.msg"
   "msg/EsfSTATUSSens.msg"
   "msg/HnrPVT.msg"
   "msg/Inf.msg"
