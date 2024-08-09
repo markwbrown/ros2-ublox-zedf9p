@@ -101,7 +101,7 @@ ament_target_dependencies(${PROJECT_NAME}_lib
 
 install(
   TARGETS ${PROJECT_NAME}_lib
-  EXPORT export_${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}_lib
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
@@ -114,7 +114,7 @@ install(DIRECTORY include/
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
-ament_export_targets(${PROJECT_NAME})
+ament_export_targets(export_${PROJECT_NAME}_lib)
 ament_export_dependencies(rosidl_default_runtime sensor_msgs std_msgs ublox_serialization)
 
 ament_package()
