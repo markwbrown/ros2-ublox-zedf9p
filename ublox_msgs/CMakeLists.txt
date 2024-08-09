@@ -16,9 +16,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
 
-set(msg_files
-  # ... (keep your existing msg_files list)
-)
+file(GLOB msg_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "msg/*.msg")
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
@@ -29,8 +27,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
 include_directories(include)
 add_library(${PROJECT_NAME} src/ublox_msgs.cpp)
-rosidl_get_typesupport_target(typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
-target_link_libraries(${PROJECT_NAME} ${typesupport_target})
+
+rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
+target_link_libraries(${PROJECT_NAME} "${cpp_typesupport_target}")
+
 ament_target_dependencies(${PROJECT_NAME}
   "ublox_serialization"
 )
