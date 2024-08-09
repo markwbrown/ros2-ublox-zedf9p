@@ -16,7 +16,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
 
-file(GLOB msg_files
+set(msg_files
   "msg/Ack.msg"
   "msg/AidALM.msg"
   "msg/AidEPH.msg"
