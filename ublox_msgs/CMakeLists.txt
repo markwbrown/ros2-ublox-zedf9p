@@ -128,7 +128,7 @@ install(DIRECTORY include/
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
-ament_export_targets(export_${PROJECT_NAME}_lib)
+ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(rosidl_default_runtime sensor_msgs std_msgs ublox_serialization)
 
 ament_package()
