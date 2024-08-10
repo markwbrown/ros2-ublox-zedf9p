@@ -13,7 +13,6 @@ endif()
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(ament_cmake_ros REQUIRED)
-find_package(asio REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -26,10 +25,16 @@ find_package(tf2 REQUIRED)
 find_package(ublox_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
 
+# Find ASIO headers
+find_path(ASIO_INCLUDE_DIR asio.hpp)
+if(NOT ASIO_INCLUDE_DIR)
+  message(FATAL_ERROR "ASIO headers not found. Please install libasio-dev.")
+endif()
+
 include_directories(
   ${ublox_msgs_INCLUDE_DIRS}
   include
-  ${asio_INCLUDE_DIRS}
+  ${ASIO_INCLUDE_DIR}
 )
 
 # build node
@@ -50,20 +55,23 @@ add_library(ublox_gps
   src/ublox_firmware7.cpp
   src/ublox_firmware8.cpp
   src/ublox_firmware9.cpp)
+
+target_compile_definitions(ublox_gps PRIVATE ASIO_STANDALONE)
+
 ament_target_dependencies(ublox_gps
-  "asio"
-  "diagnostic_msgs"
-  "diagnostic_updater"
-  "geometry_msgs"
-  "rcl_interfaces"
-  "rclcpp"
-  "rclcpp_components"
-  "sensor_msgs"
-  "std_msgs"
-  "tf2"
-  "ublox_msgs"
-  "ublox_serialization"
+  diagnostic_msgs
+  diagnostic_updater
+  geometry_msgs
+  rcl_interfaces
+  rclcpp
+  rclcpp_components
+  sensor_msgs
+  std_msgs
+  tf2
+  ublox_msgs
+  ublox_serialization
 )
+
 
 install(TARGETS ublox_gps
   ARCHIVE DESTINATION lib
