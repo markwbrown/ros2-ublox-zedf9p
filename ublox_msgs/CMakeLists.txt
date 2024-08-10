@@ -103,7 +103,11 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     std_msgs
 )
 
-# Add the new block here
+include_directories(
+  include
+  ${ublox_serialization_INCLUDE_DIRS}
+)
+
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
   add_library(${PROJECT_NAME}_lib SHARED src/ublox_msgs.cpp)
 
