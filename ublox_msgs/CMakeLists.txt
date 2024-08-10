@@ -15,7 +15,12 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
-find_package(asio REQUIRED)
+
+# Find ASIO headers
+find_path(ASIO_INCLUDE_DIR asio.hpp)
+if(NOT ASIO_INCLUDE_DIR)
+  message(FATAL_ERROR "ASIO headers not found. Please install libasio-dev.")
+endif()
 
 set(msg_files
   "msg/Ack.msg"
@@ -110,6 +115,7 @@ rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typ
 
 include_directories(
   include
+  ${ASIO_INCLUDE_DIR}
   ${ublox_serialization_INCLUDE_DIRS}
 )
 
