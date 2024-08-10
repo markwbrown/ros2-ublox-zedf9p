@@ -31,6 +31,7 @@
 
 
 #include <ublox_serialization/serialization.hpp>
+#include <ublox_msgs/ublox_msgs.h>
 
 template <typename T>
 std::vector<std::pair<uint8_t,uint8_t> > ublox::Message<T>::keys_;
