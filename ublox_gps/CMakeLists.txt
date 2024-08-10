@@ -25,10 +25,11 @@ find_package(tf2 REQUIRED)
 find_package(ublox_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
 
-# Find ASIO headers
-find_path(ASIO_INCLUDE_DIR asio.hpp)
-if(NOT ASIO_INCLUDE_DIR)
-  message(FATAL_ERROR "ASIO headers not found. Please install libasio-dev.")
+# Set the ASIO include directory
+set(ASIO_INCLUDE_DIR "/usr/include")
+
+if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio.hpp")
+  message(FATAL_ERROR "ASIO headers not found. Please check the ASIO_INCLUDE_DIR path.")
 endif()
 
 include_directories(
