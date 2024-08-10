@@ -96,12 +96,16 @@ set(msg_files
   "msg/UpdSOSAck.msg"
 )
 
+
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
   DEPENDENCIES
     sensor_msgs
     std_msgs
 )
+
+# Generate the C++ typesupport for the messages
+rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 include_directories(
   include
@@ -111,12 +115,16 @@ include_directories(
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
   add_library(${PROJECT_NAME}_lib SHARED src/ublox_msgs.cpp)
 
-  rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
   target_link_libraries(${PROJECT_NAME}_lib "${cpp_typesupport_target}")
 
   ament_target_dependencies(${PROJECT_NAME}_lib
     "ublox_serialization"
+    "sensor_msgs"
+    "std_msgs"
   )
+
+  # Ensure the library is built after the messages are generated
+  add_dependencies(${PROJECT_NAME}_lib ${PROJECT_NAME})
 
   install(
     TARGETS ${PROJECT_NAME}_lib
@@ -127,14 +135,19 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
   )
 
   ament_export_libraries(${PROJECT_NAME}_lib)
+  ament_export_targets(export_${PROJECT_NAME}_lib HAS_LIBRARY_TARGET)
 endif()
 
-# Keep these existing commands
 install(DIRECTORY include/
   DESTINATION include
 )
 
 ament_export_include_directories(include)
-ament_export_dependencies(rosidl_default_runtime sensor_msgs std_msgs ublox_serialization)
+ament_export_dependencies(
+  rosidl_default_runtime
+  sensor_msgs
+  std_msgs
+  ublox_serialization
+)
 
 ament_package()
