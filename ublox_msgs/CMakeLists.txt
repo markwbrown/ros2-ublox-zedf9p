@@ -89,6 +89,7 @@ set(msg_files
   "msg/RxmSFRB.msg"
   "msg/RxmSFRBX.msg"
   "msg/RxmSVSI.msg"
+  "msg/RxmSVSISV.msg'
   "msg/TimTM2.msg"
   "msg/UpdSOS.msg"
   "msg/UpdSOSAck.msg"
