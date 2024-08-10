@@ -115,7 +115,7 @@ ament_target_dependencies(${PROJECT_NAME}_lib
 
 install(
   TARGETS ${PROJECT_NAME}_lib
-  EXPORT export_${PROJECT_NAME}_lib
+  EXPORT export_${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
