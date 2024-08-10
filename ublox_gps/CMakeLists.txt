@@ -26,7 +26,7 @@ find_package(ublox_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
 
 # Set the ASIO include directory
-set(ASIO_INCLUDE_DIR "/usr/include")
+set(ASIO_INCLUDE_DIR "/usr/include/asio")
 
 if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio.hpp")
   message(FATAL_ERROR "ASIO headers not found. Please check the ASIO_INCLUDE_DIR path.")
