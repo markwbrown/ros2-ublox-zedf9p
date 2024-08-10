@@ -15,6 +15,7 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
+find_package(asio REQUIRED)
 
 set(msg_files
   "msg/Ack.msg"

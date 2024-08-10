@@ -25,8 +25,12 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(ublox_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
-include_directories(${ublox_msgs_INCLUDE_DIRS})
-include_directories(include)
+
+include_directories(
+  ${ublox_msgs_INCLUDE_DIRS}
+  include
+  ${asio_INCLUDE_DIRS}
+)
 
 # build node
 add_library(ublox_gps
