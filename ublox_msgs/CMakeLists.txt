@@ -74,7 +74,7 @@ set(msg_files
   "msg/NavSTATUS.msg"
   "msg/NavSVIN.msg"
   "msg/NavSVINFO.msg"
-  "msg/NavSVInfoSV.msg"
+  "msg/NavSVINFOSV.msg"
   "msg/NavTIMEGPS.msg"
   "msg/NavTIMEUTC.msg"
   "msg/NavVELECEF.msg"
