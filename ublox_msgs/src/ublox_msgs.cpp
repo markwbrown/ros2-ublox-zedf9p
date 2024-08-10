@@ -29,7 +29,9 @@
 #include <utility>
 #include <vector>
 
-#include <ublox_msgs/serialization.hpp>
+//#include <ublox_msgs/serialization.hpp>
+#include <ublox_serialization/serialization.hpp>
+
 
 template <typename T>
 std::vector<std::pair<uint8_t,uint8_t> > ublox::Message<T>::keys_;
