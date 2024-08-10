@@ -82,13 +82,16 @@ set(msg_files
   "msg/RxmALM.msg"
   "msg/RxmEPH.msg"
   "msg/RxmRAW.msg"
+  "msg/RxmRAWSV.msg"
   "msg/RxmRAWX.msg"
+  "msg/RxmRAWXMeas.msg"
   "msg/RxmRTCM.msg"
   "msg/RxmSFRB.msg"
   "msg/RxmSFRBX.msg"
   "msg/RxmSVSI.msg"
   "msg/TimTM2.msg"
   "msg/UpdSOS.msg"
+  "msg/UpdSOSAck.msg"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}
