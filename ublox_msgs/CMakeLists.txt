@@ -104,31 +104,34 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 
 include_directories(include)
-add_library(${PROJECT_NAME}_lib SHARED src/ublox_msgs.cpp)
 
-rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
-target_link_libraries(${PROJECT_NAME}_lib "${cpp_typesupport_target}")
+# Only add the library if the source file exists
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
+  add_library(${PROJECT_NAME}_lib SHARED src/ublox_msgs.cpp)
 
-ament_target_dependencies(${PROJECT_NAME}_lib
-  "ublox_serialization"
-)
+  rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
+  target_link_libraries(${PROJECT_NAME}_lib "${cpp_typesupport_target}")
 
-install(
-  TARGETS ${PROJECT_NAME}_lib
-  EXPORT export_${PROJECT_NAME}
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
+  ament_target_dependencies(${PROJECT_NAME}_lib
+    "ublox_serialization"
+  )
+
+  install(
+    TARGETS ${PROJECT_NAME}_lib
+    EXPORT export_${PROJECT_NAME}_lib
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+  )
+
+  ament_export_libraries(${PROJECT_NAME}_lib)
+endif()
 
 install(DIRECTORY include/
   DESTINATION include
 )
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
-ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(rosidl_default_runtime sensor_msgs std_msgs ublox_serialization)
 
 ament_package()
