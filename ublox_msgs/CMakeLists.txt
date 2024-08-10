@@ -103,9 +103,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     std_msgs
 )
 
-include_directories(include)
-
-# Only add the library if the source file exists
+# Add the new block here
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
   add_library(${PROJECT_NAME}_lib SHARED src/ublox_msgs.cpp)
 
@@ -127,6 +125,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
   ament_export_libraries(${PROJECT_NAME}_lib)
 endif()
 
+# Keep these existing commands
 install(DIRECTORY include/
   DESTINATION include
 )
