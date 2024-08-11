@@ -11,7 +11,7 @@
 
 #include <asio/buffer.hpp>
 #include <asio/error_code.hpp>
-#include <asio/io_service.hpp>
+#include <asio/io_context.hpp>
 #include <asio/placeholders.hpp>
 #include <asio/write.hpp>
 #include <asio/ip/udp.hpp>
@@ -31,11 +31,11 @@ class AsyncWorker final : public Worker {
   /**
    * @brief Construct an Asynchronous I/O worker.
    * @param stream the stream for th I/O service
-   * @param io_service the I/O service
+   * @param io_context the I/O context
    * @param buffer_size the size of the input and output buffers
    */
   explicit AsyncWorker(std::shared_ptr<StreamT> stream,
-                       std::shared_ptr<asio::io_service> io_service,
+                       std::shared_ptr<asio::io_context> io_context,
                        std::size_t buffer_size,
                        int debug,
                        const rclcpp::Logger& logger);
@@ -96,7 +96,7 @@ class AsyncWorker final : public Worker {
   void doClose();
 
   std::shared_ptr<StreamT> stream_; //!< The I/O stream
-  std::shared_ptr<asio::io_service> io_service_; //!< The I/O service
+  std::shared_ptr<asio::io_context> io_context_; //!< The I/O context
 
   std::mutex read_mutex_; //!< Lock for the input buffer
   std::condition_variable read_condition_;
@@ -109,11 +109,11 @@ class AsyncWorker final : public Worker {
   std::vector<unsigned char> out_; //!< The output buffer
 
   std::shared_ptr<std::thread> background_thread_; //!< thread for the I/O
-                                                       //!< service
+                                                       //!< context
   WorkerCallback read_callback_; //!< Callback function to handle received messages
   WorkerRawCallback raw_callback_; //!< Callback function to handle raw data
 
-  bool stopping_; //!< Whether or not the I/O service is closed
+  bool stopping_; //!< Whether or not the I/O context is closed
 
   int debug_; //!< Used to determine which debug messages to display
 
@@ -122,24 +122,24 @@ class AsyncWorker final : public Worker {
 
 template <typename StreamT>
 AsyncWorker<StreamT>::AsyncWorker(std::shared_ptr<StreamT> stream,
-        std::shared_ptr<asio::io_service> io_service,
+        std::shared_ptr<asio::io_context> io_context,
         std::size_t buffer_size,
         int debug,
         const rclcpp::Logger& logger)
-    : stream_(stream), io_service_(io_service), in_buffer_size_(0), stopping_(false), debug_(debug), logger_(logger) {
+    : stream_(stream), io_context_(io_context), in_buffer_size_(0), stopping_(false), debug_(debug), logger_(logger) {
   in_.resize(buffer_size);
 
   out_.reserve(buffer_size);
 
-  io_service_->post(std::bind(&AsyncWorker<StreamT>::doRead, this));
-  background_thread_ = std::make_shared<std::thread>([this]{ io_service_->run(); });
+  io_context_->post(std::bind(&AsyncWorker<StreamT>::doRead, this));
+  background_thread_ = std::make_shared<std::thread>([this]{ io_context_->run(); });
 }
 
 template <typename StreamT>
 AsyncWorker<StreamT>::~AsyncWorker() {
-  io_service_->post(std::bind(&AsyncWorker<StreamT>::doClose, this));
+  io_context_->post(std::bind(&AsyncWorker<StreamT>::doClose, this));
   background_thread_->join();
-  //io_service_->reset();
+  //io_context_->restart();
 }
 
 template <typename StreamT>
@@ -157,7 +157,7 @@ bool AsyncWorker<StreamT>::send(const unsigned char* data,
   }
   out_.insert(out_.end(), data, data + size);
 
-  io_service_->post(std::bind(&AsyncWorker<StreamT>::doWrite, this));
+  io_context_->post(std::bind(&AsyncWorker<StreamT>::doWrite, this));
   return true;
 }
 
@@ -286,7 +286,7 @@ void AsyncWorker<StreamT>::readEnd(const asio::error_code& error,
   }
 
   if (!stopping_) {
-    io_service_->post(std::bind(&AsyncWorker<StreamT>::doRead, this));
+    io_context_->post(std::bind(&AsyncWorker<StreamT>::doRead, this));
   }
 }
 

@@ -33,7 +33,7 @@
 #include <stdexcept>
 #include <thread>
 
-#include <asio/io_service.hpp>
+#include <asio/io_context.hpp>
 #include <asio/serial_port.hpp>
 #include <asio/serial_port_base.hpp>
 #include <asio/ip/tcp.hpp>
@@ -125,8 +125,8 @@ void Gps::processUpdSosAck(const ublox_msgs::msg::UpdSOSAck &m) {
 void Gps::initializeSerial(const std::string & port, unsigned int baudrate,
                            uint16_t uart_in, uint16_t uart_out) {
   port_ = port;
-  auto io_service = std::make_shared<asio::io_service>();
-  auto serial = std::make_shared<asio::serial_port>(*io_service);
+  auto io_context = std::make_shared<asio::io_context>();
+  auto serial = std::make_shared<asio::serial_port>(*io_context);
 
   // open serial port
   try {
@@ -148,7 +148,7 @@ void Gps::initializeSerial(const std::string & port, unsigned int baudrate,
   if (worker_) {
     return;
   }
-  setWorker(std::make_shared<AsyncWorker<asio::serial_port>>(serial, io_service, 8192, debug_, logger_));
+  setWorker(std::make_shared<AsyncWorker<asio::serial_port>>(serial, io_context, 8192, debug_, logger_));
 
   configured_ = false;
 
@@ -181,8 +181,8 @@ void Gps::initializeSerial(const std::string & port, unsigned int baudrate,
 }
 
 void Gps::resetSerial(const std::string & port) {
-  auto io_service = std::make_shared<asio::io_service>();
-  auto serial = std::make_shared<asio::serial_port>(*io_service);
+  auto io_context = std::make_shared<asio::io_context>();
+  auto serial = std::make_shared<asio::serial_port>(*io_context);
 
   // open serial port
   try {
@@ -198,7 +198,7 @@ void Gps::resetSerial(const std::string & port) {
   if (worker_) {
     return;
   }
-  setWorker(std::make_shared<AsyncWorker<asio::serial_port>>(serial, io_service, 8192, debug_, logger_));
+  setWorker(std::make_shared<AsyncWorker<asio::serial_port>>(serial, io_context, 8192, debug_, logger_));
   configured_ = false;
 
   // Poll UART PRT Config
@@ -223,11 +223,11 @@ void Gps::resetSerial(const std::string & port) {
 void Gps::initializeTcp(const std::string & host, const std::string & port) {
   host_ = host;
   port_ = port;
-  auto io_service = std::make_shared<asio::io_service>();
-  asio::ip::tcp::resolver::iterator endpoint;
+  auto io_context = std::make_shared<asio::io_context>();
+  asio::ip::tcp::resolver::results_type endpoints;
 
   try {
-    asio::ip::tcp::resolver resolver(*io_service);
+    asio::ip::tcp::resolver resolver(*io_context);
     endpoint =
         resolver.resolve(asio::ip::tcp::resolver::query(host, port));
   } catch (const std::runtime_error& e) {
@@ -235,7 +235,7 @@ void Gps::initializeTcp(const std::string & host, const std::string & port) {
                              port + " " + e.what());
   }
 
-  auto socket = std::make_shared<asio::ip::tcp::socket>(*io_service);
+  auto socket = std::make_shared<asio::ip::tcp::socket>(*io_context);
 
   try {
     socket->connect(*endpoint);
@@ -251,17 +251,17 @@ void Gps::initializeTcp(const std::string & host, const std::string & port) {
   if (worker_) {
     return;
   }
-  setWorker(std::make_shared<AsyncWorker<asio::ip::tcp::socket>>(socket, io_service, 8192, debug_, logger_));
+  setWorker(std::make_shared<AsyncWorker<asio::ip::tcp::socket>>(socket, io_context, 8192, debug_, logger_));
 }
 
 void Gps::initializeUdp(const std::string & host, const std::string & port) {
   host_ = host;
   port_ = port;
-  auto io_service = std::make_shared<asio::io_service>();
-  asio::ip::udp::resolver::iterator endpoint;
+  auto io_context = std::make_shared<asio::io_context>();
+  asio::ip::udp::resolver::results_type endpoints;
 
   try {
-    asio::ip::udp::resolver resolver(*io_service);
+    asio::ip::udp::resolver resolver(*io_context);
     endpoint =
         resolver.resolve(asio::ip::udp::resolver::query(host, port));
   } catch (const std::runtime_error& e) {
@@ -269,7 +269,7 @@ void Gps::initializeUdp(const std::string & host, const std::string & port) {
                              port + " " + e.what());
   }
 
-  auto socket = std::make_shared<asio::ip::udp::socket>(*io_service);
+  auto socket = std::make_shared<asio::ip::udp::socket>(*io_context);
 
   try {
     socket->connect(*endpoint);
@@ -285,7 +285,7 @@ void Gps::initializeUdp(const std::string & host, const std::string & port) {
   if (worker_) {
     return;
   }
-  setWorker(std::make_shared<AsyncWorker<asio::ip::udp::socket>>(socket, io_service, 8192, debug_, logger_));
+  setWorker(std::make_shared<AsyncWorker<asio::ip::udp::socket>>(socket, io_context, 8192, debug_, logger_));
 }
 
 void Gps::close() {
