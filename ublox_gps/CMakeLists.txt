@@ -47,6 +47,7 @@ include_directories(
   ${ublox_msgs_INCLUDE_DIRS}
   include
   ${ASIO_INCLUDE_DIR}
+  ${ASIO_INCLUDE_DIR}/asio
 )
 
 # build node
