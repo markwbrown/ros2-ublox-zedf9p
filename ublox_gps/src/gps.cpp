@@ -228,25 +228,26 @@ void Gps::initializeTcp(const std::string & host, const std::string & port) {
 
   try {
     asio::ip::tcp::resolver resolver(*io_context);
-    endpoint =
-        resolver.resolve(asio::ip::tcp::resolver::query(host, port));
+    endpoints = resolver.resolve(asio::ip::tcp::resolver::query(host, port));
   } catch (const std::runtime_error& e) {
-    throw std::runtime_error("U-Blox: Could not resolve" + host + " " +
+    throw std::runtime_error("U-Blox: Could not resolve " + host + " " +
                              port + " " + e.what());
   }
 
   auto socket = std::make_shared<asio::ip::tcp::socket>(*io_context);
 
+  asio::ip::tcp::endpoint endpoint;
   try {
-    socket->connect(*endpoint);
+    endpoint = *endpoints.begin();
+    socket->connect(endpoint);
   } catch (const std::runtime_error& e) {
     throw std::runtime_error("U-Blox: Could not connect to " +
-                             endpoint->host_name() + ":" +
-                             endpoint->service_name() + ": " + e.what());
+                             endpoint.address().to_string() + ":" +
+                             std::to_string(endpoint.port()) + ": " + e.what());
   }
 
-  RCLCPP_INFO(logger_, "U-Blox: Connected to %s:%s.", endpoint->host_name().c_str(),
-              endpoint->service_name().c_str());
+  RCLCPP_INFO(logger_, "U-Blox: Connected to %s:%d.", endpoint.address().to_string().c_str(),
+              endpoint.port());
 
   if (worker_) {
     return;
@@ -262,25 +263,26 @@ void Gps::initializeUdp(const std::string & host, const std::string & port) {
 
   try {
     asio::ip::udp::resolver resolver(*io_context);
-    endpoint =
-        resolver.resolve(asio::ip::udp::resolver::query(host, port));
+    endpoints = resolver.resolve(asio::ip::udp::resolver::query(host, port));
   } catch (const std::runtime_error& e) {
-    throw std::runtime_error("U-Blox: Could not resolve" + host + " " +
+    throw std::runtime_error("U-Blox: Could not resolve " + host + " " +
                              port + " " + e.what());
   }
 
   auto socket = std::make_shared<asio::ip::udp::socket>(*io_context);
 
+  asio::ip::udp::endpoint endpoint;
   try {
-    socket->connect(*endpoint);
+    endpoint = *endpoints.begin();
+    socket->connect(endpoint);
   } catch (const std::runtime_error& e) {
     throw std::runtime_error("U-Blox: Could not connect to " +
-                             endpoint->host_name() + ":" +
-                             endpoint->service_name() + ": " + e.what());
+                             endpoint.address().to_string() + ":" +
+                             std::to_string(endpoint.port()) + ": " + e.what());
   }
 
-  RCLCPP_INFO(logger_, "U-Blox: Connected to %s:%s.", endpoint->host_name().c_str(),
-              endpoint->service_name().c_str());
+  RCLCPP_INFO(logger_, "U-Blox: Connected to %s:%d.", endpoint.address().to_string().c_str(),
+              endpoint.port());
 
   if (worker_) {
     return;
