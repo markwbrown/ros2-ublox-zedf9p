@@ -1,0 +1,57 @@
+.aider*
+# ROS2 specific
+install/
+log/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# PyCharm
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ROS2 build artifacts
+*.o
+*.a
+*.so
+*.dylib
+
+# Colcon
+.colcon_cd_root
+
+# Compiled Python files
+*.pyc
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Logs
+*.log
+
+# Temporary files
+*.swp
+*~
+
+# Visual Studio Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# ROS2 bag files
+*.db3
+
+# Custom ignores for your project
+# Add any project-specific files or directories you want to ignore
