@@ -17,7 +17,7 @@ find_package(std_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
 
 # Set the ASIO include directory
-set(ASIO_INCLUDE_DIR "/usr/include/asio")
+set(ASIO_INCLUDE_DIR "/usr/include")
 
 if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio.hpp")
   message(FATAL_ERROR "ASIO headers not found. Please check the ASIO_INCLUDE_DIR path.")
@@ -117,6 +117,8 @@ rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typ
 include_directories(
   include
   ${ASIO_INCLUDE_DIR}
+  ${ASIO_INCLUDE_DIR}/asio
+  ${ASIO_INCLUDE_DIR}/asio/ts
   ${ublox_serialization_INCLUDE_DIRS}
 )
 
