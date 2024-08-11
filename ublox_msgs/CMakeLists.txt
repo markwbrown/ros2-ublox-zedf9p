@@ -132,8 +132,7 @@ include_directories(
   ${ublox_msgs_INCLUDE_DIRS}
   include
   ${ASIO_INCLUDE_DIR}
-  ${ASIO_INCLUDE_DIR}/boost/
-  ${ASIO_INCLUDE_DIR}/boost/asio
+  ${ASIO_INCLUDE_DIR}/asio
 )
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
