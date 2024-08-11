@@ -42,9 +42,12 @@ if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio/buffer.hpp")
   message(FATAL_ERROR "ASIO buffer headers not found. Please check the ASIO_INCLUDE_DIR path.")
 endif()
 
-find_package(asio REQUIRED)
-message(STATUS "ASIO_INCLUDE_DIRS: ${ASIO_INCLUDE_DIRS}")
-include_directories(${ASIO_INCLUDE_DIRS})
+
+include_directories(
+  ${ublox_msgs_INCLUDE_DIRS}
+  include
+  ${ASIO_INCLUDE_DIR}
+)
 
 # build node
 add_library(ublox_gps
