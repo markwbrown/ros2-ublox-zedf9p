@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(ublox_msgs)
+add_definitions(-DASIO_STANDALONE)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
