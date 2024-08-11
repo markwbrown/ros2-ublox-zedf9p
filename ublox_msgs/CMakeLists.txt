@@ -16,13 +16,21 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
-find_package(ASIO REQUIRED)
+
 
 # Set the ASIO include directory
 set(ASIO_INCLUDE_DIR "/usr/include")
 
 if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio.hpp")
-  message(FATAL_ERROR "ASIO headers not found. Please check the ASIO_INCLUDE_DIR path.")
+  message(FATAL_ERROR "ASIO asio headers not found. Please check the ASIO_INCLUDE_DIR path.")
+endif()
+
+if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio/io_service.hpp")
+  message(FATAL_ERROR "ASIO io_service headers not found. Please check the ASIO_INCLUDE_DIR path.")
+endif()
+
+if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio/buffer.hpp")
+  message(FATAL_ERROR "ASIO buffer headers not found. Please check the ASIO_INCLUDE_DIR path.")
 endif()
 
 set(msg_files
@@ -116,13 +124,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 # Generate the C++ typesupport for the messages
 rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
-include_directories(
-  include
-  ${ASIO_INCLUDE_DIR}
-  ${ASIO_INCLUDE_DIR}/asio
-  ${ASIO_INCLUDE_DIR}/asio/ts
-  ${ublox_serialization_INCLUDE_DIRS}
-)
+find_package(asio REQUIRED)
+message(STATUS "ASIO_INCLUDE_DIRS: ${ASIO_INCLUDE_DIRS}")
+include_directories(${ASIO_INCLUDE_DIRS})
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
   add_library(${PROJECT_NAME}_lib SHARED src/ublox_msgs.cpp)

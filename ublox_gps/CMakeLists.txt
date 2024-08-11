@@ -25,22 +25,26 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(ublox_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
-find_package(ASIO REQUIRED)
+
 
 # Set the ASIO include directory
 set(ASIO_INCLUDE_DIR "/usr/include")
 
 if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio.hpp")
-  message(FATAL_ERROR "ASIO headers not found. Please check the ASIO_INCLUDE_DIR path.")
+  message(FATAL_ERROR "ASIO asio headers not found. Please check the ASIO_INCLUDE_DIR path.")
 endif()
 
-include_directories(
-  ${ublox_msgs_INCLUDE_DIRS}
-  include
-  ${ASIO_INCLUDE_DIR}
-  ${ASIO_INCLUDE_DIR}/asio
-  ${ASIO_INCLUDE_DIR}/asio/ts
-)
+if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio/io_service.hpp")
+  message(FATAL_ERROR "ASIO io_service headers not found. Please check the ASIO_INCLUDE_DIR path.")
+endif()
+
+if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio/buffer.hpp")
+  message(FATAL_ERROR "ASIO buffer headers not found. Please check the ASIO_INCLUDE_DIR path.")
+endif()
+
+find_package(asio REQUIRED)
+message(STATUS "ASIO_INCLUDE_DIRS: ${ASIO_INCLUDE_DIRS}")
+include_directories(${ASIO_INCLUDE_DIRS})
 
 # build node
 add_library(ublox_gps
