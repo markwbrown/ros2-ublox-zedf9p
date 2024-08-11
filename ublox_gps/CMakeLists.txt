@@ -25,6 +25,7 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(ublox_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
+find_package(ASIO REQUIRED)
 
 # Set the ASIO include directory
 set(ASIO_INCLUDE_DIR "/usr/include")
