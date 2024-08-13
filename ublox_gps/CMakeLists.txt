@@ -18,9 +18,10 @@ find_package(asio REQUIRED)
 if(NOT ASIO_FOUND)
     message(FATAL_ERROR "ASIO library not found. Please install libasio-dev.")
 endif()
-# Print ASIO include directory for debugging
 message(STATUS "ASIO include directory: ${ASIO_INCLUDE_DIRS}")
-
+if(NOT ASIO_INCLUDE_DIRS)
+  set(ASIO_INCLUDE_DIRS "/usr/include")
+endif()
 
 find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
@@ -50,14 +51,17 @@ if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio/buffer.hpp")
   message(FATAL_ERROR "ASIO buffer headers not found. Please check the ASIO_INCLUDE_DIR path.")
 endif()
 
-
 include_directories(
   ${ublox_msgs_INCLUDE_DIRS}
-  include
-  ${ASIO_INCLUDE_DIR}
-  ${ASIO_INCLUDE_DIR}/asio
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${ASIO_INCLUDE_DIRS}
 )
-
+target_include_directories(ublox_gps PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${ASIO_INCLUDE_DIRS}
+  ${ublox_msgs_INCLUDE_DIRS}
+)
+add_definitions(-DASIO_STANDALONE)
 # build node
 add_library(ublox_gps
   src/adr_udr_product.cpp
