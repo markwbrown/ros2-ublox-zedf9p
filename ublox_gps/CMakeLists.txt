@@ -21,8 +21,7 @@ endif()
 # Print ASIO include directory for debugging
 message(STATUS "ASIO include directory: ${ASIO_INCLUDE_DIRS}")
 
-# Add ASIO include directory to your target
-target_include_directories(ublox_gps PUBLIC ${ASIO_INCLUDE_DIRS})
+
 find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(geometry_msgs REQUIRED)
