@@ -18,22 +18,45 @@ find_package(ament_cmake_ros REQUIRED)
 # ASIO setup
 find_package(asio QUIET)
 if(NOT ASIO_FOUND)
-    set(ASIO_INCLUDE_DIRS "/usr/include")
+    # Try to find ASIO headers in common locations
+    find_path(ASIO_INCLUDE_DIRS asio.hpp
+        PATHS /usr/include /usr/local/include
+        PATH_SUFFIXES asio
+    )
+    if(NOT ASIO_INCLUDE_DIRS)
+        set(ASIO_INCLUDE_DIRS "/usr/include")
+    endif()
 endif()
 
 message(STATUS "ASIO include directory: ${ASIO_INCLUDE_DIRS}")
 
-if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio.hpp")
-  message(FATAL_ERROR "ASIO asio.hpp not found. Searched in: ${ASIO_INCLUDE_DIRS}")
+# Check for asio.hpp
+if(EXISTS "${ASIO_INCLUDE_DIRS}/asio.hpp")
+    set(ASIO_HPP "${ASIO_INCLUDE_DIRS}/asio.hpp")
+elseif(EXISTS "${ASIO_INCLUDE_DIRS}/asio/asio.hpp")
+    set(ASIO_HPP "${ASIO_INCLUDE_DIRS}/asio/asio.hpp")
+else()
+    message(FATAL_ERROR "ASIO asio.hpp not found. Searched in: ${ASIO_INCLUDE_DIRS} and ${ASIO_INCLUDE_DIRS}/asio")
 endif()
 
-if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio/io_service.hpp")
-  message(FATAL_ERROR "ASIO io_service.hpp not found. Searched in: ${ASIO_INCLUDE_DIRS}/asio")
+# Check for io_service.hpp
+if(EXISTS "${ASIO_INCLUDE_DIRS}/asio/io_service.hpp")
+    set(IO_SERVICE_HPP "${ASIO_INCLUDE_DIRS}/asio/io_service.hpp")
+else()
+    message(FATAL_ERROR "ASIO io_service.hpp not found. Searched in: ${ASIO_INCLUDE_DIRS}/asio")
 endif()
 
-if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio/buffer.hpp")
-  message(FATAL_ERROR "ASIO buffer.hpp not found. Searched in: ${ASIO_INCLUDE_DIRS}/asio")
+# Check for buffer.hpp
+if(EXISTS "${ASIO_INCLUDE_DIRS}/asio/buffer.hpp")
+    set(BUFFER_HPP "${ASIO_INCLUDE_DIRS}/asio/buffer.hpp")
+else()
+    message(FATAL_ERROR "ASIO buffer.hpp not found. Searched in: ${ASIO_INCLUDE_DIRS}/asio")
 endif()
+
+message(STATUS "Found ASIO headers:")
+message(STATUS "  asio.hpp: ${ASIO_HPP}")
+message(STATUS "  io_service.hpp: ${IO_SERVICE_HPP}")
+message(STATUS "  buffer.hpp: ${BUFFER_HPP}")
 
 # Other package dependencies
 find_package(diagnostic_msgs REQUIRED)
