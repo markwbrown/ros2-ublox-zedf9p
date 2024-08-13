@@ -14,15 +14,28 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(ament_cmake_ros REQUIRED)
-find_package(asio REQUIRED)
+
+# ASIO setup
+find_package(asio QUIET)
 if(NOT ASIO_FOUND)
-    message(FATAL_ERROR "ASIO library not found. Please install libasio-dev.")
-endif()
-message(STATUS "ASIO include directory: ${ASIO_INCLUDE_DIRS}")
-if(NOT ASIO_INCLUDE_DIRS)
-  set(ASIO_INCLUDE_DIRS "/usr/include")
+    set(ASIO_INCLUDE_DIRS "/usr/include")
 endif()
 
+message(STATUS "ASIO include directory: ${ASIO_INCLUDE_DIRS}")
+
+if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio.hpp")
+  message(FATAL_ERROR "ASIO asio.hpp not found. Searched in: ${ASIO_INCLUDE_DIRS}")
+endif()
+
+if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio/io_service.hpp")
+  message(FATAL_ERROR "ASIO io_service.hpp not found. Searched in: ${ASIO_INCLUDE_DIRS}/asio")
+endif()
+
+if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio/buffer.hpp")
+  message(FATAL_ERROR "ASIO buffer.hpp not found. Searched in: ${ASIO_INCLUDE_DIRS}/asio")
+endif()
+
+# Other package dependencies
 find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -34,18 +47,6 @@ find_package(std_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(ublox_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
-
-if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio.hpp")
-  message(FATAL_ERROR "ASIO asio headers not found. Please check the ASIO_INCLUDE_DIRS path.")
-endif()
-
-if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio/io_service.hpp")
-  message(FATAL_ERROR "ASIO io_service headers not found. Please check the ASIO_INCLUDE_DIRS path.")
-endif()
-
-if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio/buffer.hpp")
-  message(FATAL_ERROR "ASIO buffer headers not found. Please check the ASIO_INCLUDE_DIRS path.")
-endif()
 
 include_directories(
   include
@@ -82,7 +83,6 @@ target_include_directories(ublox_gps PUBLIC
 )
 
 ament_target_dependencies(ublox_gps
-  asio
   diagnostic_msgs
   diagnostic_updater
   geometry_msgs
