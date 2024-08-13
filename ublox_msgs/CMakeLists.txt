@@ -10,11 +10,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+# Add the include directory to the include path
+include_directories(include)
+
 find_package(ament_cmake_ros REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
+
+# Include ublox_serialization headers
+include_directories(${ublox_serialization_INCLUDE_DIRS})
 
 set(msg_files
   "msg/Ack.msg"
@@ -96,7 +102,6 @@ set(msg_files
   "msg/UpdSOSAck.msg"
 )
 
-
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
   DEPENDENCIES
@@ -104,13 +109,20 @@ rosidl_generate_interfaces(${PROJECT_NAME}
     std_msgs
 )
 
-# Generate the C++ typesupport for the messages
 rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
   add_library(${PROJECT_NAME}_lib SHARED src/ublox_msgs.cpp)
 
-  target_link_libraries(${PROJECT_NAME}_lib "${cpp_typesupport_target}")
+  target_link_libraries(${PROJECT_NAME}_lib
+    ${cpp_typesupport_target}
+    ${ublox_serialization_LIBRARIES}
+  )
+
+  target_include_directories(${PROJECT_NAME}_lib PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+  )
 
   ament_target_dependencies(${PROJECT_NAME}_lib
     "ublox_serialization"
@@ -118,7 +130,6 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
     "std_msgs"
   )
 
-  # Ensure the library is built after the messages are generated
   add_dependencies(${PROJECT_NAME}_lib ${PROJECT_NAME})
 
   install(
@@ -133,8 +144,10 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
   ament_export_targets(export_${PROJECT_NAME}_lib HAS_LIBRARY_TARGET)
 endif()
 
-install(DIRECTORY include/
-  DESTINATION include
+# Install header files
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION include/${PROJECT_NAME}
+  FILES_MATCHING PATTERN "*.hpp"
 )
 
 ament_export_include_directories(include)
