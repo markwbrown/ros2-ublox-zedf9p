@@ -11,9 +11,18 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(ament_cmake_ros REQUIRED)
 find_package(asio REQUIRED)
+if(NOT ASIO_FOUND)
+    message(FATAL_ERROR "ASIO library not found. Please install libasio-dev.")
+endif()
+# Print ASIO include directory for debugging
+message(STATUS "ASIO include directory: ${ASIO_INCLUDE_DIRS}")
+
+# Add ASIO include directory to your target
+target_include_directories(ublox_gps PUBLIC ${ASIO_INCLUDE_DIRS})
 find_package(diagnostic_msgs REQUIRED)
 find_package(diagnostic_updater REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -28,8 +37,8 @@ find_package(ublox_serialization REQUIRED)
 
 
 # Set the ASIO include directory
-set(ASIO_INCLUDE_DIR "/usr/include")
-add_compile_options(-I${ASIO_INCLUDE_DIR})
+# set(ASIO_INCLUDE_DIR "/usr/include")
+# add_compile_options(-I${ASIO_INCLUDE_DIR})
 if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio.hpp")
   message(FATAL_ERROR "ASIO asio headers not found. Please check the ASIO_INCLUDE_DIR path.")
 endif()
