@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+Copycmake_minimum_required(VERSION 3.5)
 project(ublox_msgs)
 
 # Default to C++14
@@ -15,22 +15,6 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
-
-
-# Set the ASIO include directory
-set(ASIO_INCLUDE_DIR "/usr/include")
-add_compile_options(-I${ASIO_INCLUDE_DIR})
-if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio.hpp")
-  message(FATAL_ERROR "ASIO asio headers not found. Please check the ASIO_INCLUDE_DIR path.")
-endif()
-
-if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio/io_service.hpp")
-  message(FATAL_ERROR "ASIO io_service headers not found. Please check the ASIO_INCLUDE_DIR path.")
-endif()
-
-if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio/buffer.hpp")
-  message(FATAL_ERROR "ASIO buffer headers not found. Please check the ASIO_INCLUDE_DIR path.")
-endif()
 
 set(msg_files
   "msg/Ack.msg"
@@ -123,18 +107,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 # Generate the C++ typesupport for the messages
 rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
-set(ASIO_INCLUDE_DIR "/usr/include")
-if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio.hpp")
-  message(FATAL_ERROR "ASIO headers not found. Please install libasio-dev or set ASIO_INCLUDE_DIR correctly.")
-endif()
-
-include_directories(
-  ${ublox_msgs_INCLUDE_DIRS}
-  include
-  ${ASIO_INCLUDE_DIR}
-  ${ASIO_INCLUDE_DIR}/asio
-)
-
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
   add_library(${PROJECT_NAME}_lib SHARED src/ublox_msgs.cpp)
 
@@ -154,7 +126,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/ublox_msgs.cpp")
     EXPORT export_${PROJECT_NAME}_lib
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
+    RUNTIME DESTINATION lib
   )
 
   ament_export_libraries(${PROJECT_NAME}_lib)
