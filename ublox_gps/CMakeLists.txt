@@ -80,6 +80,7 @@ add_library(ublox_gps
   src/ublox_firmware7.cpp
   src/ublox_firmware8.cpp
   src/ublox_firmware9.cpp)
+
 ament_target_dependencies(ublox_gps
   "asio"
   "diagnostic_msgs"
