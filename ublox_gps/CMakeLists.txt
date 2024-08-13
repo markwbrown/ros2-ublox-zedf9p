@@ -35,34 +35,27 @@ find_package(tf2 REQUIRED)
 find_package(ublox_msgs REQUIRED)
 find_package(ublox_serialization REQUIRED)
 
-
-# Set the ASIO include directory
-# set(ASIO_INCLUDE_DIR "/usr/include")
-# add_compile_options(-I${ASIO_INCLUDE_DIR})
-if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio.hpp")
-  message(FATAL_ERROR "ASIO asio headers not found. Please check the ASIO_INCLUDE_DIR path.")
+if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio.hpp")
+  message(FATAL_ERROR "ASIO asio headers not found. Please check the ASIO_INCLUDE_DIRS path.")
 endif()
 
-if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio/io_service.hpp")
-  message(FATAL_ERROR "ASIO io_service headers not found. Please check the ASIO_INCLUDE_DIR path.")
+if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio/io_service.hpp")
+  message(FATAL_ERROR "ASIO io_service headers not found. Please check the ASIO_INCLUDE_DIRS path.")
 endif()
 
-if(NOT EXISTS "${ASIO_INCLUDE_DIR}/asio/buffer.hpp")
-  message(FATAL_ERROR "ASIO buffer headers not found. Please check the ASIO_INCLUDE_DIR path.")
+if(NOT EXISTS "${ASIO_INCLUDE_DIRS}/asio/buffer.hpp")
+  message(FATAL_ERROR "ASIO buffer headers not found. Please check the ASIO_INCLUDE_DIRS path.")
 endif()
 
 include_directories(
-  ${ublox_msgs_INCLUDE_DIRS}
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${ASIO_INCLUDE_DIRS}
-)
-target_include_directories(ublox_gps PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  include
   ${ASIO_INCLUDE_DIRS}
   ${ublox_msgs_INCLUDE_DIRS}
 )
+
 add_definitions(-DASIO_STANDALONE)
-# build node
+
+# build library
 add_library(ublox_gps
   src/adr_udr_product.cpp
   src/gnss.cpp
@@ -81,44 +74,47 @@ add_library(ublox_gps
   src/ublox_firmware8.cpp
   src/ublox_firmware9.cpp)
 
+target_include_directories(ublox_gps PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${ASIO_INCLUDE_DIRS}
+  ${ublox_msgs_INCLUDE_DIRS}
+)
+
 ament_target_dependencies(ublox_gps
-  "asio"
-  "diagnostic_msgs"
-  "diagnostic_updater"
-  "geometry_msgs"
-  "rcl_interfaces"
-  "rclcpp"
-  "rclcpp_components"
-  "sensor_msgs"
-  "std_msgs"
-  "tf2"
-  "ublox_msgs"
-  "ublox_serialization"
+  asio
+  diagnostic_msgs
+  diagnostic_updater
+  geometry_msgs
+  rcl_interfaces
+  rclcpp
+  rclcpp_components
+  sensor_msgs
+  std_msgs
+  tf2
+  ublox_msgs
+  ublox_serialization
 )
 
-install(TARGETS ublox_gps
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
+# build node
 add_executable(ublox_gps_node src/node_main.cpp)
-ament_target_dependencies(ublox_gps_node
-  "rclcpp"
-)
 target_link_libraries(ublox_gps_node ublox_gps)
+ament_target_dependencies(ublox_gps_node
+  rclcpp
+)
 
 # build logger node
 add_executable(ublox_logger_node src/logger_node_pa.cpp src/raw_data_pa.cpp)
 set_target_properties(ublox_logger_node PROPERTIES OUTPUT_NAME ublox_logger)
 ament_target_dependencies(ublox_logger_node
-  "rclcpp"
-  "std_msgs"
+  rclcpp
+  std_msgs
 )
 
-install(TARGETS
-  ublox_gps_node ublox_logger_node
-  DESTINATION lib/${PROJECT_NAME}
+install(TARGETS ublox_gps ublox_gps_node ublox_logger_node
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 rclcpp_components_register_nodes(ublox_gps
